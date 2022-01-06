@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {DeleteResult, Repository, UpdateResult} from 'typeorm';
+import {DeleteResult, Repository} from 'typeorm';
 import { Cat } from './cat.entity';
 import { Breed } from './breed.entity';
 import { Color } from './color.entity';
@@ -93,7 +93,7 @@ export class CatService {
 
     const updateCat = this.catsRepository.create({...cat,...dto, color: color, breed: breed});
     this.catsRepository.merge(cat, updateCat);
-    return await this.catsRepository.save(updateCat);
+    return this.catsRepository.save(updateCat);
   }
 
 }
