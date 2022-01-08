@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {DeleteResult, Repository} from 'typeorm';
 import { Cat } from './cat.entity';
@@ -25,7 +25,12 @@ export class CatService {
   }
 
   async getOneCat(id: number): Promise<Cat> {
-    return this.catsRepository.findOne(id);
+    const cat = await  this.catsRepository.findOne(id);
+    if (!cat) {
+      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+    }
+
+    return cat;
   }
 
   async createBreed(dto: CreateBreedDto) {
@@ -55,12 +60,22 @@ export class CatService {
   }
 
   async reserveCat(id: number): Promise<Cat> {
-    await this.catsRepository.update(id, { isReserved: true });
-    return this.catsRepository.findOne(id);
+    const cat = await this.catsRepository.findOne(id);
+    if (!cat) {
+      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+    }
+    else {
+      await this.catsRepository.update(id, { isReserved: true });
+      return this.catsRepository.findOne(id)
+    }
   }
 
   async unreserveCat(id: number): Promise<Cat> {
-    await this.catsRepository.update(id, { isReserved: true });
+    const cat = await this.catsRepository.findOne(id);
+    if (!cat) {
+      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+    }
+    await this.catsRepository.update(id, { isReserved: false });
     return this.catsRepository.findOne(id);
   }
 
@@ -69,13 +84,17 @@ export class CatService {
   }
 
   async removeCat(id: number): Promise<DeleteResult> {
+    const cat = await this.catsRepository.findOne(id)
+    if (!cat) {
+      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+    }
     return this.catsRepository.delete(id);
   }
 
   async updateCat(id: number, dto: UpdateCatDto): Promise<Cat | string> {
-    const cat = await this.catsRepository.findOneOrFail(id);
-    if(!cat.id) {
-
+    const cat = await this.catsRepository.findOne(id);
+    if(!cat) {
+      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
     }
     const breed= await this.breedRepository.findOne({breed_name: dto.breed_name})
     if(dto.breed_name) {
