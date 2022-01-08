@@ -111,7 +111,6 @@ export class CatService {
     }
 
     const updateCat = this.catsRepository.create({...cat,...dto, color: color, breed: breed});
-    this.catsRepository.merge(cat, updateCat);
     return this.catsRepository.save(updateCat);
   }
 
