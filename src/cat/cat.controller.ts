@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {CatService} from "./cat.service";
 import {Cat} from "./cat.entity";
 import {CreateCatDto} from "./dto/create-cat.dto";
@@ -7,7 +7,9 @@ import {Breed} from "./breed.entity";
 import {CreateColorDto} from "./dto/create-color.dto";
 import {Color} from "./color.entity";
 import {UpdateCatDto} from "./dto/update-cat.dto";
-import {DeleteResult, UpdateResult} from "typeorm";
+import {DeleteResult} from "typeorm";
+import { Express } from 'express';
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('cats')
 export class CatController {
@@ -48,6 +50,12 @@ export class CatController {
     @Post('/create/color')
     createColor(@Body() dto: CreateColorDto): Promise<Color> {
         return this.catService.createColor(dto);
+    }
+
+    @Post('add_image/:id')
+    @UseInterceptors(FileInterceptor('file'))
+    async addImage(@Param('id') id: number, @UploadedFile() file: Express.Multer.File){
+        return this.catService.addImage(id, file.buffer, file.originalname);
     }
 
     @Put('update/:id')

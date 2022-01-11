@@ -1,6 +1,7 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
 import { Breed } from './breed.entity';
 import { Color } from './color.entity';
+import {Image} from "../image/image.entity";
 
 @Entity()
 export class Cat {
@@ -14,12 +15,6 @@ export class Cat {
     nullable: true
   })
   public age?: number;
-
-  @Column({
-    unique: true,
-    nullable: true
-  })
-  public image?: string;
 
   @Column()
   public cost: number;
@@ -42,4 +37,15 @@ export class Cat {
     name: 'color_id'
   })
   public color: Color;
+
+  @OneToOne(
+      ()=>Image,
+      {
+        eager: true,
+        nullable: true
+      })
+  @JoinColumn({
+    name: "photo"
+  })
+  public image?: Image;
 }

@@ -6,36 +6,39 @@ import { Cat } from './cat/cat.entity';
 import { Breed } from './cat/breed.entity';
 import { Color } from './cat/color.entity';
 import { CatModule } from './cat/cat.module';
-import {AwsSdkModule} from "nest-aws-sdk";
-import { SharedIniFileCredentials, S3, config } from 'aws-sdk';
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
+import {ConfigModule, ConfigService} from "@nestjs/config";
 
 
 @Module({
   imports: [
-      TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: 'localhost',
-        port: 5432,
-        password: '3012',
-        username: 'postgres',
-        database: 'cats_db',
-        entities: [Cat, Breed, Color],
-        synchronize: true,
-        autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      entities: [Cat, Breed, Color],
+      synchronize: true,
+      autoLoadEntities: true
+
+      // imports: [ConfigModule],
+      // useFactory: (configService: ConfigService) => ({
+      //   type: 'postgres',
+      //   host: configService.get('POSTGRES_HOST'),
+      //   port: +configService.get<number>('POSTGRES_PORT'),
+      //   username: configService.get('POSTGRES_USER'),
+      //   password: configService.get('POSTGRES_PASSWORD'),
+      //   database: configService.get('POSTGRES_DATABASE'),
+      //   synchronize: true,
+      //   autoLoadEntities: true,
+      // }),
+      // inject: [ConfigService],
     }),
     CatModule,
-      AwsSdkModule.forRoot({
-        defaultServiceOptions: {
-          region: 'us-east-1',
-          accessKeyId: 'AKIA2U3K53D5T5JFHAQP',
-          secretAccessKey: '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',
-          credentials: new SharedIniFileCredentials({
-            profile: 's3-manager'
-          }),
-        },
-        services: [S3],
-      }),
   ],
   controllers: [AppController],
   providers: [AppService],

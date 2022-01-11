@@ -8,6 +8,7 @@ import {CreateCatDto} from "./dto/create-cat.dto";
 import {UpdateCatDto} from "./dto/update-cat.dto";
 import {CreateBreedDto} from "./dto/create-breed.dto";
 import {CreateColorDto} from "./dto/create-color.dto";
+import {ImageService} from "../image/image.service";
 
 @Injectable()
 export class CatService {
@@ -18,6 +19,7 @@ export class CatService {
     private breedRepository: Repository<Breed>,
     @InjectRepository(Color)
     private colorRepository: Repository<Color>,
+    private readonly imageService: ImageService
   ) {}
 
   async getAll(): Promise<Cat[]> {
@@ -114,4 +116,11 @@ export class CatService {
     return this.catsRepository.save(updateCat);
   }
 
+  async addImage(id: number, imageBuffer: Buffer, filename: string) {
+    const image = await this.imageService.uploadPublicFile(imageBuffer, filename);
+    const cat = await this.catsRepository.findOne(id);
+    const imgCat = this.catsRepository.create({...cat, image: image});
+    await this.catsRepository.save(imgCat);
+    return image;
+  }
 }
