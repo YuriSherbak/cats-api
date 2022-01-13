@@ -10,10 +10,10 @@ import {UpdateCatDto} from "./dto/update-cat.dto";
 import {DeleteResult} from "typeorm";
 import { Express } from 'express';
 import {FileInterceptor} from "@nestjs/platform-express";
+import {Image} from "../image/image.entity";
 
 @Controller('cats')
 export class CatController {
-
     constructor(private readonly catService: CatService) {
     }
 
@@ -54,7 +54,7 @@ export class CatController {
 
     @Post('add_image/:id')
     @UseInterceptors(FileInterceptor('file'))
-    async addImage(@Param('id') id: number, @UploadedFile() file: Express.Multer.File){
+    async addImage(@Param('id') id: number, @UploadedFile() file: Express.Multer.File): Promise<Image>{
         return this.catService.addImage(id, file.buffer, file.originalname);
     }
 
