@@ -15,7 +15,7 @@ export class ImageService {
         private imageRepository: Repository<Image>,
     ) {}
 
-    async uploadPublicFile(dataBuffer: Buffer, filename: string) {
+    async uploadPublicFile(dataBuffer: Buffer, filename: string): Promise<Image> {
         const s3 = new S3();
         const uploadResult = await s3.upload({
             Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
@@ -27,7 +27,7 @@ export class ImageService {
             key: uploadResult.Key,
             url: uploadResult.Location
         });
-
+7
         return await this.imageRepository.save(newFile);
     }
 }
