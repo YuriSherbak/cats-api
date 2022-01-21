@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:generate": "ts-node --project tsconfig.json node_modules/.bin/typeorm migration:generate -f coonnection.config.ts",
+    "migration:run": "ts-node --project tsconfig.json node_modules/.bin/typeorm migration:run -f coonnection.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -38,7 +40,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "typeorm": "^0.2.41",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yarn": "^1.22.17"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

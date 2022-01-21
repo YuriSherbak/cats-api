@@ -2,11 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Cat } from './cat/cat.entity';
-import { Breed } from './cat/breed.entity';
-import { Color } from './cat/color.entity';
 import { CatModule } from './cat/cat.module';
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import {ConfigModule} from "@nestjs/config";
 
 
 @Module({
@@ -16,27 +13,16 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_HOST,
-      port: Number(process.env.POSTGRES_PORT),
-      username: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      database: process.env.POSTGRES_DB,
-      entities: [Cat, Breed, Color],
-      synchronize: true,
+      host: process.env.POSTGRES_HOST || 'localhost',
+      port: Number(process.env.POSTGRES_PORT) || 5432,
+      username: process.env.POSTGRES_USER || 'yuri',
+      password: process.env.POSTGRES_PASSWORD || '3012',
+      database: process.env.POSTGRES_DBc || 'cats_db',
+      entities: ["dist/**/*.entity{ .ts,.js}"],
+      synchronize: false,
+      migrations: ["dist/migrations/*{.ts ,.js}"],
+      migrationsRun: true,
       autoLoadEntities: true
-
-      // imports: [ConfigModule],
-      // useFactory: (configService: ConfigService) => ({
-      //   type: 'postgres',
-      //   host: configService.get('POSTGRES_HOST'),
-      //   port: +configService.get<number>('POSTGRES_PORT'),
-      //   username: configService.get('POSTGRES_USER'),
-      //   password: configService.get('POSTGRES_PASSWORD'),
-      //   database: configService.get('POSTGRES_DATABASE'),
-      //   synchronize: true,
-      //   autoLoadEntities: true,
-      // }),
-      // inject: [ConfigService],
     }),
     CatModule,
   ],
