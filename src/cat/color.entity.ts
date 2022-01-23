@@ -1,9 +1,9 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Cat } from './cat.entity';
 
 @Entity()
 export class Color {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   color_id: string;
 
   @Column()

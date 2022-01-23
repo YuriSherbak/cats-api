@@ -24,6 +24,7 @@ export class ImageService {
         }).promise();
 
         const newFile = this.imageRepository.create({
+            id: `${uuid()}`,
             key: uploadResult.Key,
             url: uploadResult.Location
         });

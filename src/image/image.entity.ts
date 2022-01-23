@@ -1,9 +1,9 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, PrimaryColumn} from "typeorm";
 
 @Entity()
 export class Image {
-    @PrimaryGeneratedColumn()
-    public id:number;
+    @PrimaryColumn()
+    public id:string;
 
     @Column()
     public url: string;

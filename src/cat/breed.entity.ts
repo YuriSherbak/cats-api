@@ -1,10 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Cat } from './cat.entity';
 
 @Entity()
 export class Breed {
-  @PrimaryGeneratedColumn()
-  public breed_id: number;
+  @PrimaryColumn()
+  public breed_id: string;
 
   @Column({
     unique: true

@@ -1,12 +1,13 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
 import { Breed } from './breed.entity';
 import { Color } from './color.entity';
 import {Image} from "../image/image.entity";
 
+
 @Entity()
 export class Cat {
-  @PrimaryGeneratedColumn()
-  public id: number;
+  @PrimaryColumn()
+  public id: string;
 
   @Column()
   public name: string;

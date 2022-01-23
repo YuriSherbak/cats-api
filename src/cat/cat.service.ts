@@ -10,6 +10,7 @@ import {CreateBreedDto} from "./dto/create-breed.dto";
 import {CreateColorDto} from "./dto/create-color.dto";
 import {ImageService} from "../image/image.service";
 import {Image} from "../image/image.entity";
+import {v4 as uuid} from 'uuid';
 
 @Injectable()
 export class CatService {
@@ -37,16 +38,19 @@ export class CatService {
   }
 
   async createBreed(dto: CreateBreedDto) {
-    const breed = this.breedRepository.create(dto)
+    const breed_id = `${uuid()}`;
+    const breed = this.breedRepository.create({...dto, breed_id})
     return this.breedRepository.save(breed)
   }
 
   async createColor(dto:CreateColorDto) {
-    const color = this.colorRepository.create(dto)
+    const color_id = `${uuid()}`;
+    const color = this.colorRepository.create({...dto, color_id})
     return this.colorRepository.save(color)
   }
 
   async createCat(dto: CreateCatDto): Promise<Cat>{
+    let id = `${uuid()}`;
     let breed = await this.breedRepository.findOne({where: {breed_name: dto.breed_name}});
     let color = await  this.colorRepository.findOne({where: {color_name: dto.color_name}});
     if(!breed) {
@@ -58,7 +62,7 @@ export class CatService {
       color = await newColor;
     }
 
-    const cat = this.catsRepository.create({...dto, breed: breed, color: color});
+    const cat = this.catsRepository.create({...dto, id, breed: breed, color: color});
     return this.catsRepository.save(cat);
   }
 
