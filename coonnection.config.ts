@@ -7,7 +7,7 @@ const config: ConnectionOptions = {
     port: parseInt(process.env.POSTGRES_PORT) || 5432,
     username: process.env.POSTGRES_USER || 'yuri',
     password: process.env.POSTGRES_PASSWORD || '3012',
-    database: process.env.POSTGRES_DBc || 'cats_db',
+    database: process.env.POSTGRES_DB || 'cats_db',
     entities: ["src/**/*.entity.ts"],
     synchronize: false,
     migrations: ["migrations/*.ts"],

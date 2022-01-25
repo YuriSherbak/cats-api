@@ -13,6 +13,7 @@ import {ConfigModule} from "@nestjs/config";
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
+      url: process.env.DATABASE_URL,
       host: process.env.POSTGRES_HOST || 'localhost',
       port: Number(process.env.POSTGRES_PORT) || 5432,
       username: process.env.POSTGRES_USER || 'yuri',
