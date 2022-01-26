@@ -28,7 +28,6 @@ export class ImageService {
             key: uploadResult.Key,
             url: uploadResult.Location
         });
-7
         return await this.imageRepository.save(newFile);
     }
 }

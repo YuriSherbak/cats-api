@@ -1,16 +1,15 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {DeleteResult, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import { Cat } from './cat.entity';
 import { Breed } from './breed.entity';
 import { Color } from './color.entity';
-import {CreateCatDto} from "./dto/create-cat.dto";
-import {UpdateCatDto} from "./dto/update-cat.dto";
-import {CreateBreedDto} from "./dto/create-breed.dto";
-import {CreateColorDto} from "./dto/create-color.dto";
 import {ImageService} from "../image/image.service";
 import {Image} from "../image/image.entity";
 import {v4 as uuid} from 'uuid';
+import { CatInput } from './dto/cat.input';
+import {BreedInput} from "./dto/breed.input";
+import {ColorInput} from "./dto/color.input";
 
 @Injectable()
 export class CatService {
@@ -28,7 +27,7 @@ export class CatService {
     return this.catsRepository.find();
   }
 
-  async getOneCat(id: number): Promise<Cat> {
+  async getOneCat(id: string): Promise<Cat> {
     const cat = await  this.catsRepository.findOne(id);
     if (!cat) {
       throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
@@ -37,36 +36,38 @@ export class CatService {
     return cat;
   }
 
-  async createBreed(dto: CreateBreedDto) {
+  async createBreed(breedInput: BreedInput) {
     const breed_id = `${uuid()}`;
-    const breed = this.breedRepository.create({...dto, breed_id})
+    const breed = this.breedRepository.create({...breedInput, breed_id})
     return this.breedRepository.save(breed)
   }
 
-  async createColor(dto:CreateColorDto) {
+  async createColor(colorInput: ColorInput) {
     const color_id = `${uuid()}`;
-    const color = this.colorRepository.create({...dto, color_id})
+    const color = this.colorRepository.create({...colorInput, color_id})
     return this.colorRepository.save(color)
   }
 
-  async createCat(dto: CreateCatDto): Promise<Cat>{
+  async createCat(catInput: CatInput): Promise<Cat>{
     let id = `${uuid()}`;
-    let breed = await this.breedRepository.findOne({where: {breed_name: dto.breed_name}});
-    let color = await  this.colorRepository.findOne({where: {color_name: dto.color_name}});
+    let breed = await this.breedRepository.findOne({where: {breed_name: catInput.breed.breed_name}});
+    let color = await  this.colorRepository.findOne({where: {color_name: catInput.color.color_name}});
     if(!breed) {
-      const newBreed = this.createBreed(dto);
+      const newBreed = this.createBreed(catInput.breed);
       breed = await newBreed;
     }
     if(!color) {
-      const newColor = this.createColor(dto);
+      const newColor = this.createColor(catInput.color);
       color = await newColor;
     }
 
-    const cat = this.catsRepository.create({...dto, id, breed: breed, color: color});
+
+
+    const cat = this.catsRepository.create({...catInput, id, breed: breed, color: color});
     return this.catsRepository.save(cat);
   }
 
-  async reserveCat(id: number): Promise<Cat> {
+  async reserveCat(id: string): Promise<Cat> {
     const cat = await this.catsRepository.findOne(id);
     if (!cat) {
       throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
@@ -77,7 +78,7 @@ export class CatService {
     }
   }
 
-  async unreserveCat(id: number): Promise<Cat> {
+  async unreserveCat(id: string): Promise<Cat> {
     const cat = await this.catsRepository.findOne(id);
     if (!cat) {
       throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
@@ -90,38 +91,39 @@ export class CatService {
     return this.catsRepository.find({ where: { isReserved: true } });
   }
 
-  async removeCat(id: number): Promise<DeleteResult> {
+  async removeCat(id: string): Promise<Cat> {
     const cat = await this.catsRepository.findOne(id)
     if (!cat) {
       throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
     }
-    return this.catsRepository.delete(id);
+    await this.catsRepository.delete(id);
+    return cat;
   }
 
-  async updateCat(id: number, dto: UpdateCatDto): Promise<Cat | string> {
-    const cat = await this.catsRepository.findOne(id);
-    if(!cat) {
-      throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
-    }
-    const breed= await this.breedRepository.findOne({breed_name: dto.breed_name})
-    if(dto.breed_name) {
-      if(!breed) {
-        return "[First create a breed]";
-      }
-    }
+  // async updateCat(id: string, dto: UpdateCatDto ): Promise<Cat | string> {
+  //   const cat = await this.catsRepository.findOne(id);
+  //   if(!cat) {
+  //     throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+  //   }
+  //   const breed= await this.breedRepository.findOne({breed_name: dto.breed_name})
+  //   if(dto.breed_name) {
+  //     if(!breed) {
+  //       return "[First create a breed]";
+  //     }
+  //   }
+  //
+  //   const color = await this.colorRepository.findOne({color_name: dto.color_name})
+  //   if (dto.color_name) {
+  //     if (!color) {
+  //       return "[First create a color]";
+  //     }
+  //   }
+  //
+  //   const updateCat = this.catsRepository.create({...cat,...dto, color: color, breed: breed});
+  //   return this.catsRepository.save(updateCat);
+  // }
 
-    const color = await this.colorRepository.findOne({color_name: dto.color_name})
-    if (dto.color_name) {
-      if (!color) {
-        return "[First create a color]";
-      }
-    }
-
-    const updateCat = this.catsRepository.create({...cat,...dto, color: color, breed: breed});
-    return this.catsRepository.save(updateCat);
-  }
-
-  async addImage(id: number, imageBuffer: Buffer, filename: string): Promise<Image> {
+  async addImage(id: string, imageBuffer: Buffer, filename: string): Promise<Image> {
     const image = await this.imageService.uploadPublicFile(imageBuffer, filename);
     const cat = await this.catsRepository.findOne(id);
     const imgCat = this.catsRepository.create({...cat, image: image});
