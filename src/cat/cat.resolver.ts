@@ -1,18 +1,15 @@
-import {Args, Mutation, Query, Resolver} from "@nestjs/graphql";
+import {Args, Mutation, Parent, Query, ResolveField, Resolver} from "@nestjs/graphql";
 import {CatService} from "./cat.service";
 import {Cat} from "./cat.entity";
 import {CatInput} from "./dto/cat.input";
-import {UploadedFile, UseInterceptors} from "@nestjs/common";
-import {FileInterceptor} from "@nestjs/platform-express";
 import {Image} from "../image/image.entity";
 import {Breed} from "./breed.entity";
 import {BreedInput} from "./dto/breed.input";
 import {Color} from "./color.entity";
 import {ColorInput} from "./dto/color.input";
-import { FileUpload, GraphQLUpload } from "graphql-upload"
-import {createReadStream} from "fs";
+import {FileUpload, GraphQLUpload} from "graphql-upload"
 
-@Resolver()
+@Resolver(of => Cat)
 export class CatResolver {
     constructor(private catService: CatService) {}
 
@@ -69,5 +66,10 @@ export class CatResolver {
     @Mutation(returns => Color)
     createColor(@Args('breedInput') colorInput: ColorInput): Promise<Color> {
         return this.catService.createColor(colorInput);
+    }
+
+    @ResolveField('nameBreedConcatenation', returns=>String)
+     async nameBreedConcatenation(@Parent() cat: Cat): Promise<string> {
+        return `${cat.name}  ${cat.breed.breed_name}`;
     }
 }
