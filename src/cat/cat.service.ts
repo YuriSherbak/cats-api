@@ -100,28 +100,29 @@ export class CatService {
     return cat;
   }
 
-  // async updateCat(id: string, dto: UpdateCatDto ): Promise<Cat | string> {
-  //   const cat = await this.catsRepository.findOne(id);
-  //   if(!cat) {
-  //     throw new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
-  //   }
-  //   const breed= await this.breedRepository.findOne({breed_name: dto.breed_name})
-  //   if(dto.breed_name) {
-  //     if(!breed) {
-  //       return "[First create a breed]";
-  //     }
-  //   }
-  //
-  //   const color = await this.colorRepository.findOne({color_name: dto.color_name})
-  //   if (dto.color_name) {
-  //     if (!color) {
-  //       return "[First create a color]";
-  //     }
-  //   }
-  //
-  //   const updateCat = this.catsRepository.create({...cat,...dto, color: color, breed: breed});
-  //   return this.catsRepository.save(updateCat);
-  // }
+  // Не робит(((
+  async updateCat(id: string, catInput: CatInput): Promise<Cat | string> {
+    const cat = await this.catsRepository.findOne(id);
+    if (!cat) {
+      throw  new HttpException('[this cat was not found]', HttpStatus.NOT_FOUND);
+    }
+    let breed = await this.breedRepository.findOne({where: {breed_name: catInput.breed.breed_name}});
+    if (catInput.breed) {
+      if (!breed) {
+        return "[First create a breed]";
+      }
+    }
+
+      let color = await this.colorRepository.findOne({where: {color_name: catInput.color.color_name}})
+      if (catInput.color) {
+        if (!color) {
+          return "[First create a color]";
+        }
+      }
+
+    const updateCat = this.catsRepository.create({...cat, ...catInput, breed:breed, color:color})
+    return this.catsRepository.save(updateCat);
+  }
 
   async addImage(id: string, imageBuffer: Buffer, filename: string): Promise<Image> {
     const image = await this.imageService.uploadPublicFile(imageBuffer, filename);

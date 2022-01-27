@@ -24,7 +24,7 @@ export class CatResolver {
     }
 
     @Mutation(returns => Cat)
-    createCat(@Args('catInput')catInput: CatInput): Promise<Cat> {
+    createCat(@Args('data')catInput: CatInput): Promise<Cat> {
         return this.catService.createCat(catInput)
     }
 
@@ -59,17 +59,23 @@ export class CatResolver {
      }
 
      @Mutation(returns => Breed)
-    createBreed(@Args('breedInput') breedInput: BreedInput): Promise<Breed> {
+    createBreed(@Args('data') breedInput: BreedInput): Promise<Breed> {
         return this.catService.createBreed(breedInput);
      }
 
     @Mutation(returns => Color)
-    createColor(@Args('breedInput') colorInput: ColorInput): Promise<Color> {
+    createColor(@Args('data') colorInput: ColorInput): Promise<Color> {
         return this.catService.createColor(colorInput);
     }
 
     @ResolveField('nameBreedConcatenation', returns=>String)
      async nameBreedConcatenation(@Parent() cat: Cat): Promise<string> {
         return `${cat.name}  ${cat.breed.breed_name}`;
+    }
+
+    @Mutation(returns => Cat)
+    updateCat(@Args('id', {type: ()=> String}) id: string,
+              @Args('data') catInput: CatInput) {
+        return this.catService.updateCat(id, catInput);
     }
 }

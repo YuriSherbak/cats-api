@@ -2,6 +2,6 @@ import {Field, InputType} from "@nestjs/graphql";
 
 @InputType()
 export class ColorInput{
-    @Field()
-    color_name: string;
+    @Field({nullable: true})
+    color_name?: string;
 }

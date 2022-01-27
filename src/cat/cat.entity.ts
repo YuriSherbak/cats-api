@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn} from 'typeorm';
 import { Breed } from './breed.entity';
 import { Color } from './color.entity';
 import {Image} from "../image/image.entity";
@@ -7,7 +7,7 @@ import {Field, ObjectType} from "@nestjs/graphql";
 @Entity()
 @ObjectType()
 export class Cat {
-  @Field(type => String)
+  @Field(type => String, {nullable: false})
   @PrimaryColumn()
   public id: string;
 
@@ -15,23 +15,23 @@ export class Cat {
   @Column()
   public name: string;
 
-  @Field(type => Number)
+  @Field(type => Number, {nullable:true})
   @Column({
     nullable: true
   })
   public age?: number;
 
-  @Field(type => Number)
+  @Field(type => Number, {nullable:true})
   @Column()
   public cost: number;
 
-  @Field(type => Boolean)
+  @Field(type => Boolean, {nullable:true})
   @Column({
     default: false
   })
   public isReserved: boolean = false;
 
-  @Field(type => Breed)
+  @Field(type => Breed, {nullable:true})
   @ManyToOne(() => Breed, breed => breed.cats,
       {eager: true, onUpdate: "CASCADE", onDelete: "CASCADE"})
   @JoinColumn({
@@ -39,7 +39,7 @@ export class Cat {
   })
   public breed: Breed;
 
-  @Field(type => Color)
+  @Field(type => Color, {nullable:true})
   @ManyToOne(() => Color, color => color.cats,
       {eager: true, onUpdate: "CASCADE", onDelete: "CASCADE"})
   @JoinColumn({
@@ -47,7 +47,7 @@ export class Cat {
   })
   public color: Color;
 
-  @Field(type => Image)
+  @Field(type => Image, {nullable: true})
   @OneToOne(
       ()=>Image,
       {

@@ -6,15 +6,17 @@ import {Field, ObjectType} from "@nestjs/graphql";
 @ObjectType()
 export class Color {
 
-  @Field(type => String)
+  @Field(type => String, {nullable:false})
   @PrimaryColumn()
   color_id: string;
 
-  @Field(type => String)
-  @Column()
+  @Field(type => String, {nullable:true})
+  @Column({
+    unique: true
+  })
   color_name: string;
 
-  @Field(type => [Cat])
+  @Field(type => [Cat], {nullable:true})
   @OneToMany(() => Cat, (cat) => cat.color)
   cats: Cat[];
 }

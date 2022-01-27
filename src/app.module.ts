@@ -28,7 +28,8 @@ import { graphqlUploadExpress } from "graphql-upload"
       synchronize: false,
       migrations: ["dist/migrations/*{.ts ,.js}"],
       migrationsRun: true,
-      autoLoadEntities: true
+      autoLoadEntities: true,
+      logging: true
     }),
     GraphQLModule.forRoot({
       include: [CatModule],
